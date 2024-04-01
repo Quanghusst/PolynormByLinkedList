@@ -31,6 +31,7 @@ public:
 	{
 		clear();
 	}
+	PNode getHead () const {return head;}
 	bool isEmpty() const { return head == nullptr; }
 	void clear()
 	{
@@ -74,7 +75,7 @@ public:
 		}
 		current->next = new_node;
 	}
-	PNode getNodeAt(unsigned int index) const
+	PNode getNodeAt(unsigned const int& index) const
 	{
 		PNode current = head;
 		for (int i = 0; i < index; i++)
@@ -85,83 +86,80 @@ public:
 	}
 	void insertAfter(PNode current_node, TValue value)
 	{
-		if (isEmpty())
-			return;
-		PNode new_node = new Node(value);
-		new_node->next = current_node->next;
-		current_node->next = new_node;
+		if(isEmpty())	std::cout << "list is empty!" << endl;
+		else if(current_node == nullptr) std::cout << "node not found!" << endl;
+		else{
+			PNode new_node = new Node<TValue>(value);
+			if(current_node->next != nullptr)
+				new_node->next = current_node->next;
+			current_node->next = new_node;
+		}
 	}
 	void insertBefore(PNode current_node, TValue value)
 	{
-		if (isEmpty())
-			return;
-		if (current_node == head)
-		{
-			pushFront(value);
-			return;
+		if(isEmpty())	std::cout << "list is empty!" << endl;
+		else if(current_node == nullptr) std::cout << "node not found!" << endl;
+		else{
+			PNode new_node = new Node<TValue>(value);
+			new_node->next = current_node;
+			if (current_node != head)
+			{
+				PNode current = head;
+				while (current->next != current_node)
+					current = current->next;
+				current->next = new_node;
+			}else{
+				head = new_node;
+			}
 		}
-		PNode new_node = new Node(value);
-
-		PNode current = head;
-		while (current->next != current_node)
-		{
-			current = current->next;
-		}
-
-		new_node->next = current_node;
-		current->next = new_node;
 	}
-	void deleteAt(int index)
+	void remove(unsigned const int& index)
 	{
-		if (index >= size() || index < 0)
-		{
-			return;
+		if(isEmpty())	std::cout << "list is empty!" << endl;
+		else if(index < 0 || index >= size() )	cout << "index not found!" << endl;
+		else{
+			if (index == 0)
+			{
+				PNode temp = head;
+				head = head->next;
+				delete temp;
+				
+			}else{
+				PNode current = head;
+				for (int i = 0; i < index - 1; i++)
+					current = current->next;
+				PNode tmp = current;
+				current->next = current->next->next;
+				delete tmp;
+			}
 		}
-		if (index == 0)
-		{
-			PNode temp = head;
-			head = head->next;
-			delete temp;
-			return;
-		}
-		PNode current = head;
-		for (int i = 0; i < index - 1; i++)
-		{
-			current = current->next;
-		}
-		PNode tmp = current;
-		current->next = current->next->next;
-		delete tmp;
 	}
-	friend std::ostream &operator<<(std::ostream &out, const LinkedList &h)
+	friend std::ostream &operator<<(std::ostream &out, const LinkedList &H)
 	{
 		// Vì h là 1 hằng nên các phương thức trong đó cũng phải là hàm hằng
 		// int size() const;
 		// PNode getNodeAt(unsigned int index) const;
-		if (h.isEmpty()) // cương lĩnh chính trị của đảng
-		{
-			out << "nullptr\n";
-			return out;
+		if(H.isEmpty())	cout << "list is empty!";
+		else{
+			PNode current = H.head;
+			while (current != nullptr)
+			{
+				out << current->info << '\t';
+				current = current->next;
+			}
 		}
-
-		for (int i = 0; i < h.size(); i++)
-		{
-			out << h.getNodeAt(i)->info << '\n';
-		}
-		
+		return out;
 	}
-	TValue operator[]  (int index) const 
+	TValue& operator[]  (int index)  
 	{
-		if (index >= size() || index < 0)
-		{
-			exit(1);
+		if(isEmpty())	cout << "list is empty!" << endl;
+		else if(index < 0 || index >= size() )	cout << "index not found!" << endl;
+		else{
+			PNode current = head;
+			for (int i = 0; i < index; i++)
+				current = current->next;
+			return current->info;
 		}
-
-		PNode current = head;
-		for (int i = 0; i < index; i++)
-		{
-			current = current->next;
-		}
-		return current->info;
+		return TValue{};
 	}
 };
